@@ -1,5 +1,6 @@
 import express from 'express'
 import {productController} from '../controllers/productController.js'
+import { verifyAccessToken } from '../middleware/authMiddleware.js'
 const route = express.Router()
 
 
@@ -9,9 +10,9 @@ route.get('/',productController.getAll)
 
 // Chi tiết sản phẩm
 route.get('/:id',productController.getDetail)
-route.post('/create',productController.createNew)
-route.put('/update/:id', productController.update)
-route.delete("/delete/:id",productController.deleteItem)
+route.post('/create',verifyAccessToken,productController.createNew)
+route.put('/update/:id',verifyAccessToken, productController.update)
+route.delete("/delete/:id",verifyAccessToken,productController.deleteItem)
 
 
 export const productRoute = route

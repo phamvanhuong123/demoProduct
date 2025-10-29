@@ -32,7 +32,8 @@ const update = async (req, res, next) => {
 
 const getAll = async (req, res, next) => {
   try {
-    const products = await productService.getAll()
+    const keyword = req.query.keyword?.trim() || "";
+    const products = await productService.getAll(keyword)
     res.status(StatusCodes.OK).json({
       message: 'Danh sách sản phẩm',
       data: products

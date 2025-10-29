@@ -16,7 +16,7 @@ export default function AppRouter() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/products" element={<Products />} />
-        <Route path="/products/:id" element={token ? <ProductDetail /> : <Navigate to="/login" />} />
+        <Route path="/product/:id" element={token ? <ProductDetail /> : <Navigate to="/login" />} />
       </Routes>
     </>
   );

@@ -26,11 +26,11 @@ const validateBeforeCreate = async (data) => {
 };
 
 // 1. Xem danh sách sản phẩm
-const findAll = async () => {
+const findAll = async (filter = {}) => {
   try {
     const results = await GET_DB()
       .collection(PRODUCT_COLLECTION_NAME)
-      .find({})
+      .find(filter)
       .sort({ createdAt: -1 })
       .toArray();
 

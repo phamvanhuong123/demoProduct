@@ -36,9 +36,16 @@ const update = async (id, reqBody) => {
 };
 
 
-const getAll = async () => {
+const getAll = async (keyword = "") => {
   try {
-    const products = await productModel.findAll();
+    const filter = keyword
+      ? {
+          $or: [
+            { name: { $regex: keyword, $options: "i" } }
+          ]
+        }
+      : {};
+    const products = await productModel.findAll(filter);
     return products;
   } catch (error) {
     throw new ApiError(StatusCodes.INTERNAL_SERVER_ERROR, "Không thể lấy danh sách sản phẩm");

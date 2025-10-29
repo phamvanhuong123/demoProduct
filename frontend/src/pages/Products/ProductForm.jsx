@@ -1,6 +1,7 @@
 import { useState } from "react";
 import api from "../../apis/axiosClient";
 import { Plus } from "lucide-react";
+import { toast } from "react-toastify";
 
 export default function ProductForm({ onCreated }) {
   const [form, setForm] = useState({
@@ -9,19 +10,24 @@ export default function ProductForm({ onCreated }) {
     category: "",
     description: "",
   });
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async () => {
     if (!form.name || !form.price) {
-      alert("Vui lòng nhập tên và giá sản phẩm!");
+      toast.warning(" Vui lòng nhập tên và giá sản phẩm!");
       return;
     }
 
+    setLoading(true);
     try {
       await api.post("/product/create", form);
+      toast.success(" Thêm sản phẩm thành công!");
       setForm({ name: "", price: "", category: "", description: "" });
       onCreated();
     } catch (err) {
-      alert("Không thể thêm sản phẩm!");
+      toast.error(" Không thể thêm sản phẩm!");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -31,40 +37,36 @@ export default function ProductForm({ onCreated }) {
         <Plus size={20} /> Thêm sản phẩm mới
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <input
-          type="text"
-          placeholder="Tên sản phẩm"
-          value={form.name}
-          onChange={(e) => setForm({ ...form, name: e.target.value })}
-          className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-300"
-        />
-        <input
-          type="number"
-          placeholder="Giá (VND)"
-          value={form.price}
-          onChange={(e) => setForm({ ...form, price: e.target.value })}
-          className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-300"
-        />
-        <input
-          type="text"
-          placeholder="Danh mục"
-          value={form.category}
-          onChange={(e) => setForm({ ...form, category: e.target.value })}
-          className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-300"
-        />
-        <input
-          type="text"
-          placeholder="Mô tả"
-          value={form.description}
-          onChange={(e) => setForm({ ...form, description: e.target.value })}
-          className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-300"
-        />
+        {["name", "price", "category", "description"].map((field, i) => (
+          <input
+            key={i}
+            type={field === "price" ? "number" : "text"}
+            placeholder={
+              field === "name"
+                ? "Tên sản phẩm"
+                : field === "price"
+                ? "Giá (VND)"
+                : field === "category"
+                ? "Danh mục"
+                : "Mô tả"
+            }
+            value={form[field]}
+            onChange={(e) => setForm({ ...form, [field]: e.target.value })}
+            disabled={loading}
+            className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-300 disabled:opacity-60"
+          />
+        ))}
       </div>
       <button
         onClick={handleSubmit}
-        className="mt-5 w-full md:w-auto px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all"
+        disabled={loading}
+        className={`mt-5 w-full md:w-auto px-6 py-2 rounded-lg text-amber-950 transition-all ${
+          loading
+            ? "bg-gray-400 cursor-not-allowed"
+            : "bg-indigo-600 hover:bg-indigo-700 shadow-md"
+        }`}
       >
-        Thêm sản phẩm
+        {loading ? "Đang thêm..." : "Thêm sản phẩm"}
       </button>
     </div>
   );
